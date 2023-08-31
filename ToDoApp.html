@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>To-do app</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.6/dist/vue.global.min.js"></script>
+    <style>
+        body {
+        font-family: monospace;
+        background-image: url('background.jpeg'); 
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center; 
+        background-color: #df4c4c; 
+        }
+
+        #app {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #ef96ae;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #ede1eb;
+            background-image: linear-gradient(to right, #f37395, #072241);
+            text-align: center;
+         font-family: monospace;
+         font-size: 3rem;
+           
+        }
+
+        form {
+            display: flex;
+            margin-bottom: 30px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            font-size: 1.2rem;
+        }
+
+        label {
+            flex: 1;
+            font-weight: bold;
+            color: #082543;
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        input[type="text"] {
+            flex: 3;
+            padding: 5px;
+            border: 1px solid #08111b;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #0e161f;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #dfb836;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #fff;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeIn 0.7s ease forwards;
+        }
+
+        li.completed {
+            background-color: #daeeef;
+        }
+
+        .completed {
+            text-decoration: line-through;
+        }
+
+        button.done {
+            background-color: #17a2b8;
+        }
+
+        button.remove {
+            background-color: #dc3549;
+        }
+
+        p {
+            color: #102944;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>To-do List</h1>
+        
+        <br>
+
+        <!-- Task Input Form -->
+        <form @submit.prevent="addTask">
+            <label for="taskInput" style="text-decoration: underline;">Add a task: </label>
+            <input type="text" id="taskInput" v-model="newTask" placeholder="What do you have planned?">
+            <button type="submit">Add</button>
+        </form>
+
+        <!-- Task List -->
+        <transition-group name="fade" tag="ul">
+            <li v-for="task in tasks" :key="task.id" :class="{ 'completed': task.completed }">
+                <span>{{ task.text }}</span>
+                <button class="done" @click="doneTaskStatus(task)">Done</button>
+                <button class="remove" @click="removeTask(task)">Remove</button>
+            </li>
+        </transition-group>
+
+        <!-- Display number of incomplete tasks -->
+        <p v-if="incompleteTasks.length > 0">Incomplete tasks: {{ incompleteTasks.length }}</p>
+        <p v-else>All tasks are completed! YAY😺</p>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    newTask: '',
+                    tasks: []
+                };
+            },
+            computed: {
+                incompleteTasks() {
+                    return this.tasks.filter(task => !task.completed);
+                }
+            },
+            methods: {
+                addTask() {
+                    if (this.newTask.trim() !== '') {
+                        this.tasks.push({ id: Date.now(), text: this.newTask, completed: false });
+                        this.newTask = '';
+                    }
+                },
+                doneTaskStatus(task) {
+                    task.completed = !task.completed;
+                },
+                removeTask(task) {
+                    const index = this.tasks.indexOf(task);
+                    if (index > -1) {
+                        this.tasks.splice(index, 1);
+                    }
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
